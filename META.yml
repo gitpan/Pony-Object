@@ -1,0 +1,33 @@
+---
+abstract: 'tiny object system with privacy settings for properties and methods'
+author:
+  - 'Georgy Bazhukov <gosha@bugov.net>'
+build_requires:
+  Test::More: 0
+configure_requires:
+  Module::Build: 0.4
+dynamic_config: 1
+generated_by: 'Module::Build version 0.4, CPAN::Meta::Converter version 2.112150'
+keywords:
+  - Object
+  - Private
+  - Protected
+license: perl
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: Pony-Object
+provides:
+  Pony::Object:
+    file: lib/Pony/Object.pm
+    version: 0.02
+requires:
+  Attribute::Handlers: 0
+  Carp: 0
+  Module::Load: 0
+  Storable: 0
+  perl: 5.010
+resources:
+  license: http://dev.perl.org/licenses/
+  repository: https://github.com/h15/pony-object
+version: 0.02

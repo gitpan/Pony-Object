@@ -1,0 +1,39 @@
+Build.PL
+CHANGES
+'examples/01. Basic usage/Human/Base.pm'
+'examples/01. Basic usage/Human/Movable.pm'
+'examples/01. Basic usage/main.pl'
+'examples/02. Advanced usage/Human/Base.pm'
+'examples/02. Advanced usage/Human/Movable.pm'
+'examples/02. Advanced usage/Human/WithCache.pm'
+'examples/02. Advanced usage/main.pl'
+lib/Pony/Object.pm
+LICENSE
+Makefile.PL
+MANIFEST			This list of files
+META.json
+META.yml
+README
+script/clean_repo
+script/install
+t/00-object.t
+t/ignore/01-object-benchmark.t
+t/Object/Animal/Artiodactyls.pm
+t/Object/Animal/Base.pm
+t/Object/Animal/Cattle.pm
+t/Object/Animal/Cow.pm
+t/Object/Benchmark/BlessedRef.pm
+t/Object/Benchmark/Pony.pm
+t/Object/DeepCopy.pm
+t/Object/DeepCopyExt.pm
+t/Object/DeepCopyExtExt.pm
+t/Object/FirstPonyClass.pm
+t/Object/FourthPonyClass.pm
+t/Object/ProtectedPony.pm
+t/Object/ProtectedPony2.pm
+t/Object/ProtectedPony3.pm
+t/Object/ProtectedPonyExt.pm
+t/Object/SecondPonyClass.pm
+t/Object/Singleton.pm
+t/Object/SingletonExt.pm
+t/Object/ThirdPonyClass.pm

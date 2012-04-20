@@ -1,0 +1,20 @@
+Revision history for Pony::Object
+
+0.02  20-04-2012
+        - Add access privacy for methods and properties;
+        - Add support keywords protected, public, private for properties;
+        - Add privacy guessing for keyword 'has';
+        - Add method attributes Protected, Public, Private;
+        - Fix problem with properties inheritance.
+
+0.01  10-01-2012
+        - Add support singletons 'from the box';
+        - Add properties inheritance;
+        - Add dump method for all objects for easily debug;
+        - Fix problem with deep copy;
+        - Add ALL method - get all properties.
+
+0.00  08-10-2011
+        - Add support keyword 'has' for properties;
+        - Add strict and modern import;
+        - Add nice accessors for properties.
