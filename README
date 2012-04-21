@@ -9,16 +9,17 @@ SYNOPSIS
         use Pony::Object;
 
 DESCRIPTION
-    When some package using Pony::Object, it's becoming strict (and shows
+    When some package uses Pony::Object, it's becomes strict (and shows
     warnings) and modern (can use perl 5.10 features like as "say"). Also
-    "dump" function is using now as Data::Dumper. It's useful on debugging.
+    "dump" function is redefined and shows data structure. It's useful for
+    debugging.
 
   Specific moments
     Besides new function "dump" Pony::Object has other specific moments.
 
    has
-    Keyword "has" says Pony::Object about new object fields. All fields are
-    public. You can also describe object methods via "has"... If you want.
+    Keyword "has" declares new fields. All fields are public. You can also
+    describe object methods via "has"... If you want.
 
         package News;
         use Pony::Object;
@@ -49,14 +50,13 @@ DESCRIPTION
         $news->title = 'Something important';
         $news->printTitle();
 
-    Pony::Object fields are changing via "=". For example: $obj->field =
-    'a'.
+    Pony::Object fields assigned via "=". For example: $obj->field = 'a'.
 
    new
-    Pony::Object hasn't method "new". In fact, of course it has. But "new"
-    is an internal function, so you should not use it if you want not have
-    additional fun. Instead of this Pony::Object has "init" function, where
-    you can write the same, what you wanna write in "new". "init" is
+    Pony::Object doesn't have method "new". In fact, of course it has. But
+    "new" is an internal function, so you should not use it if you want not
+    have additional fun. Instead of this Pony::Object has "init" function,
+    where you can write the same, what you wish write in "new". "init" is
     after-hook for "new".
 
         package News;
@@ -264,8 +264,8 @@ DESCRIPTION
         1;
 
    Singletons
-    For singletons Pony::Object has simplpe definition. You just should
-    declare that on use Pony::Object;
+    For singletons Pony::Object has simple syntax. You just should declare
+    that on use Pony::Object;
 
         package Notes;
         use Pony::Object 'singleton';

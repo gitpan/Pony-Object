@@ -6,7 +6,7 @@ use Module::Load;
 use Carp qw(confess);
 use Attribute::Handlers;
 
-our $VERSION = 0.02;
+our $VERSION = 0.03;
 
 # "You will never find a more wretched hive of scum and villainy.
 #  We must be careful."
@@ -262,9 +262,9 @@ Pony::Object is an object system, which provides simple way to use cute objects.
 
 =head1 DESCRIPTION
 
-When some package using Pony::Object, it's becoming strict (and shows warnings)
+When some package uses Pony::Object, it's becomes strict (and shows warnings)
 and modern (can use perl 5.10 features like as C<say>). Also C<dump> function
-is using now as Data::Dumper. It's useful on debugging.
+is redefined and shows data structure. It's useful for debugging.
 
 =head2 Specific moments
 
@@ -272,7 +272,7 @@ Besides new function C<dump> Pony::Object has other specific moments.
 
 =head3 has
 
-Keyword C<has> says Pony::Object about new object fields.
+Keyword C<has> declares new fields.
 All fields are public. You can also describe object methods via C<has>...
 If you want.
 
@@ -305,14 +305,14 @@ If you want.
     $news->title = 'Something important';
     $news->printTitle();
 
-Pony::Object fields are changing via "=". For example: $obj->field = 'a'.
+Pony::Object fields assigned via "=". For example: $obj->field = 'a'.
 
 =head3 new
 
-Pony::Object hasn't method C<new>. In fact, of course it has. But C<new> is an
+Pony::Object doesn't have method C<new>. In fact, of course it has. But C<new> is an
 internal function, so you should not use it if you want not have additional fun.
 Instead of this Pony::Object has C<init> function, where you can write the same,
-what you wanna write in C<new>. C<init> is after-hook for C<new>.
+what you wish write in C<new>. C<init> is after-hook for C<new>.
 
     package News;
     use Pony::Object;
@@ -526,7 +526,7 @@ For example, use Pony::Object 'Base::Class';
 
 =head3 Singletons
 
-For singletons Pony::Object has simplpe definition. You just should declare that
+For singletons Pony::Object has simple syntax. You just should declare that
 on use Pony::Object;
 
     package Notes;

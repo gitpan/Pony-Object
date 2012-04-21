@@ -1,30 +1,30 @@
 package Human::Movable;
 use Pony::Object qw/Human::Base/;
 
-    has 'x' => 0;
-    has 'y' => 0;
+    protected 'x' => 0;
+    protected 'y' => 0;
     
-    sub moveLeft
+    sub moveLeft : Public
         {
             --shift->x;
         }
 
-    sub moveRight
+    sub moveRight : Public
         {
-            ++shift->x;
+            --shift->x;
         }
     
-    sub moveTop
+    sub moveTop : Public
         {
-            ++shift->y;
+            --shift->y;
         }
 
-    sub moveDown
+    sub moveDown : Public
         {
             --shift->y;
         }
     
-    sub getResultWay
+    sub getResultWay : Public
         {
             my $this = shift;
             return ( $this->x**2 + $this->y**2 )**0.5;

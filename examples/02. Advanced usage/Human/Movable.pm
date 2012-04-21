@@ -11,12 +11,12 @@ use Pony::Object qw/Human::Base/;
 
     sub moveRight : Public
         {
-            --shift->x;
+            ++shift->x;
         }
     
     sub moveTop : Public
         {
-            --shift->y;
+            ++shift->y;
         }
 
     sub moveDown : Public
@@ -24,7 +24,7 @@ use Pony::Object qw/Human::Base/;
             --shift->y;
         }
     
-    sub getResiltWay : Public
+    sub getResultWay : Public
         {
             my $this = shift;
             return ( $this->x**2 + $this->y**2 )**0.5;

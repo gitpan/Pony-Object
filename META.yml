@@ -20,7 +20,7 @@ name: Pony-Object
 provides:
   Pony::Object:
     file: lib/Pony/Object.pm
-    version: 0.02
+    version: 0.03
 requires:
   Attribute::Handlers: 0
   Carp: 0
@@ -30,4 +30,4 @@ requires:
 resources:
   license: http://dev.perl.org/licenses/
   repository: https://github.com/h15/pony-object
-version: 0.02
+version: 0.03

@@ -25,7 +25,7 @@ use feature ':5.10';
        $human2->moveDown() for 1 .. 4;
     
     print $human2->name, '\'s way length: ';
-    say $human2->getResiltWay();
+    say $human2->getResultWay();
     
     # Human::WithCache
     use Human::WithCache;

@@ -17,6 +17,9 @@ README
 script/clean_repo
 script/install
 t/00-object.t
+t/Human/Base.pm
+t/Human/Movable.pm
+t/Human/WithCache.pm
 t/ignore/01-object-benchmark.t
 t/Object/Animal/Artiodactyls.pm
 t/Object/Animal/Base.pm
