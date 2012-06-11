@@ -7,6 +7,10 @@ CHANGES
 'examples/02. Advanced usage/Human/Movable.pm'
 'examples/02. Advanced usage/Human/WithCache.pm'
 'examples/02. Advanced usage/main.pl'
+'examples/03. Abstracts/main.pl'
+'examples/03. Abstracts/Text.pm'
+'examples/03. Abstracts/Text/Base.pm'
+'examples/03. Abstracts/Text/Interface.pm'
 lib/Pony/Object.pm
 LICENSE
 Makefile.PL
@@ -14,9 +18,11 @@ MANIFEST			This list of files
 META.json
 META.yml
 README
-script/clean_repo
-script/install
 t/00-object.t
+t/Abstract/First.pm
+t/Abstract/Fourth.pm
+t/Abstract/Second.pm
+t/Abstract/Third.pm
 t/Human/Base.pm
 t/Human/Movable.pm
 t/Human/WithCache.pm
@@ -25,6 +31,8 @@ t/Object/Animal/Artiodactyls.pm
 t/Object/Animal/Base.pm
 t/Object/Animal/Cattle.pm
 t/Object/Animal/Cow.pm
+t/Object/Animal/ICattle.pm
+t/Object/Animal/ICow.pm
 t/Object/Benchmark/BlessedRef.pm
 t/Object/Benchmark/Pony.pm
 t/Object/DeepCopy.pm

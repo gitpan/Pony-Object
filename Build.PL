@@ -7,7 +7,7 @@ use Module::Build;
 my $builder = Module::Build->new
 (
 	module_name         => 'Pony::Object',
-	dist_abstract       => 'tiny object system with privacy settings for properties and methods',
+	dist_abstract       => 'tiny object system with privacy settings for properties and methods, abstract classes and methods',
 	license             => 'perl',
 	dist_author         => 'Georgy Bazhukov <gosha@bugov.net>',
 	dist_version_from   => 'lib/Pony/Object.pm',
@@ -18,10 +18,10 @@ my $builder = Module::Build->new
 	requires =>
 	{
 		'perl' => '5.010',
-		'Attribute::Handlers' => 0,
 		'Module::Load' => 0,
 		'Storable' => 0,
 		'Carp' => 0,
+		'Scalar::Util' => 0,
 	},
 	meta_merge =>
 	{
@@ -29,7 +29,7 @@ my $builder = Module::Build->new
 		{
 			repository => 'https://github.com/h15/pony-object',
 		},
-		keywords => [ qw/Object Private Protected/ ],
+		keywords => [ qw/Class Object Method OOP Private Protected Abstract Interface/ ],
 	},
 	add_to_cleanup     => [],
 	create_makefile_pl => 'traditional',

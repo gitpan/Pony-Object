@@ -1,5 +1,5 @@
 package Object::Animal::Base;
-use Pony::Object;
+use Pony::Object -abstract;
 
     protected format => '%s says %s';
     private __format => '%s says %s again';
@@ -21,5 +21,7 @@ use Pony::Object;
             my $this = shift;
             return sprintf( $this->__format, $this->type, $this->word );
         }
+    
+    sub inc : Abstract;
 
 1;

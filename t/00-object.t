@@ -7,7 +7,7 @@ use strict;
 use warnings;
 use feature ':5.10';
 
-use Test::More tests => 79;
+use Test::More tests => 83;
 
 use_ok 'Pony::Object';
 
@@ -278,7 +278,7 @@ use Object::Animal::Cattle;
 
 
     my $cow = new Object::Animal::Cattle;
-    ok( $cow->say eq 'cattle says moo', 'Uning inheritanced method with self properties' );
+    ok( $cow->say eq 'cattle says moo', 'Using inheritanced method with self properties' );
     ok( $cow->getLegsCount eq 4, 'Using inheritanced properties with self method' );
     
     ok( $cow->getMilk() + $cow->getMilk() == 3 );
@@ -331,6 +331,24 @@ use Object::Animal::Cattle;
     
     ok( $human3->avgOut() == 1_000 );
     
+    
+use Abstract::First;
+use Abstract::Second;
+use Abstract::Third;
+use Abstract::Fourth;
+
+    my $abs = eval { new Abstract::First };
+    ok( !defined $abs, 'Raise error on trying to use abstract class' );
+    
+    my $c11 = new Abstract::Second;
+    $c11->setA(12);
+    ok( $c11->getA() == 12 );
+    
+    my $c12 = eval { new Abstract::Third };
+    ok( !defined $abs, 'Raise error when abstract methods doesn\'t implement' );
+    
+    my $c13 = eval { new Abstract::Fourth };
+    ok( !defined $abs, 'Inheritance of abstract classes' );
     
     #=========
     #   END

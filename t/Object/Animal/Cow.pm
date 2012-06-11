@@ -1,5 +1,6 @@
 package Object::Animal::Cow;
-use Pony::Object qw(Object::Animal::Artiodactyls);
+use Pony::Object qw(Object::Animal::Artiodactyls
+                    Object::Animal::ICow );
     
     private type => 'cow';
     protected word => 'moo';
