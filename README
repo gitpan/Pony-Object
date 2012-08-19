@@ -362,6 +362,12 @@ DESCRIPTION
     of inheritance packages. You should define abstract classes in the end
     of Pony::Object param list.
 
+SEE
+    Discussion
+        <http://lorcode.org/thread/2338>
+
+    Git <https://github.com/h15/pony-object>
+
 COPYRIGHT AND LICENSE
     Copyright (C) 2011 - 2012, Georgy Bazhukov.
 

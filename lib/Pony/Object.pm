@@ -7,7 +7,7 @@ use feature ':5.10';
 use Storable qw/dclone/;
 use Module::Load;
 use Carp qw(confess);
-use Scalar::Util qw( refaddr );
+use Scalar::Util qw(refaddr);
 
 use constant DEBUG => 0;
 
@@ -26,7 +26,7 @@ BEGIN
         }
     }
 
-our $VERSION = 0.04;
+our $VERSION = 0.05;
 
 
 # This function will runs on each use of this module.
@@ -115,7 +115,7 @@ sub parseParams
                 # Define singleton class
                 # via use param.
                 
-                when ( /-?singleton/ )
+                when ( /^-?singleton$/ )
                 {
                     $call->META->{isSingleton} = 1;
                     next;
@@ -124,7 +124,7 @@ sub parseParams
                 # Define abstract class
                 # via use param.
                 
-                when ( /-?abstract/ )
+                when ( /^-?abstract$/ )
                 {
                     $call->META->{isAbstract} = 1;
                     next;
@@ -132,7 +132,7 @@ sub parseParams
             }
             
             load $param;
-            $param->AFTER_LOAD_CHECK;
+            $param->AFTER_LOAD_CHECK if $param->can('AFTER_LOAD_CHECK');
             
             push @$isaRef, $param;
         }
@@ -954,6 +954,20 @@ You can use use abstract methods and classes in the following way:
 Don't forget, that perl looking for function from left to right in list of
 inheritance packages. You should define abstract classes in the end of
 Pony::Object param list.
+
+=head1 SEE
+
+=over
+
+=item Discussion
+
+L<http://lorcode.org/thread/2338>
+
+=item Git
+
+L<https://github.com/h15/pony-object>
+
+=back
 
 =head1 COPYRIGHT AND LICENSE
 

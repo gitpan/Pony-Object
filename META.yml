@@ -5,9 +5,9 @@ author:
 build_requires:
   Test::More: 0
 configure_requires:
-  Module::Build: 0.4
+  Module::Build: 0.40
 dynamic_config: 1
-generated_by: 'Module::Build version 0.4, CPAN::Meta::Converter version 2.110440'
+generated_by: 'Module::Build version 0.4003, CPAN::Meta::Converter version 2.112150'
 keywords:
   - Class
   - Object
@@ -25,7 +25,7 @@ name: Pony-Object
 provides:
   Pony::Object:
     file: lib/Pony/Object.pm
-    version: 0.04
+    version: 0.05
 requires:
   Carp: 0
   Module::Load: 0
@@ -35,4 +35,4 @@ requires:
 resources:
   license: http://dev.perl.org/licenses/
   repository: https://github.com/h15/pony-object
-version: 0.04
+version: 0.05
