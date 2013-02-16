@@ -1,5 +1,9 @@
 Revision history for Pony::Object
 
+0.06  16-02-2013
+        - Add try/catch/finally blocks for exception catching.
+        - Add Pony::Object::Throwable -- base class for exceptions.
+
 0.05  19-08-2012
         - Fix two bugs.
 
@@ -25,3 +29,4 @@ Revision history for Pony::Object
         - Add support keyword 'has' for properties;
         - Add strict and modern import;
         - Add nice accessors for properties.
+
