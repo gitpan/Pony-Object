@@ -1,5 +1,9 @@
 Revision history for Pony::Object
 
+0.07  04-06-2013
+        - Try/catch/finally blocks are optional. Use ':exceptions' param to use them.
+        - Add alias 'to_h' for 'toHash'.
+
 0.06  16-02-2013
         - Add try/catch/finally blocks for exception catching.
         - Add Pony::Object::Throwable -- base class for exceptions.

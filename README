@@ -6,11 +6,11 @@ OVERVIEW
     objects.
 
 SYNOPSIS
-      # Class: MyArticle
+      # Class: MyArticle (Example)
       #   Abstract class for articles.
   
       package MyArticle;
-      use Pony::Object -abstract;
+      use Pony::Object qw(-abstract :extentions);
       use MyArticle::Exception::IO; # Based on Pony::Object::Throwable class.
     
         protected date => undef;
@@ -21,9 +21,10 @@ SYNOPSIS
     
         # Function: init
         #   Constructor.
+        #
         # Parameters:
-        #   date -- Integer
-        #   authors -- ArrayRef
+        #   date - Int
+        #   authors - ArrayRef
     
         sub init : Public
           {
@@ -34,8 +35,9 @@ SYNOPSIS
     
         # Function: getDate
         #   Get formatted date.
+        #
         # Returns:
-        #   String
+        #   Str
     
         sub getDate : Public
           {
@@ -46,8 +48,10 @@ SYNOPSIS
     
         # Function: dateFormat
         #   Convert Unix time to good looking string. Not implemented.
+        #
         # Parameters:
-        #   date -- Integer
+        #   date - Int
+        #
         # Returns:
         #   String
     
@@ -56,8 +60,9 @@ SYNOPSIS
     
         # Function: fromPdf
         #   Trying to create article from pdf file.
+        #
         # Parameters:
-        #   file -- String -- pdf file.
+        #   file - Str - pdf file.
     
         sub fromPdf : Public
           {
@@ -185,7 +190,7 @@ DESCRIPTION
       my $news = new News;
       say dump $news->META;
 
-   toHash
+   toHash or to_h
     Get object's data structure and return it in hash.
 
       package News;
@@ -200,7 +205,7 @@ DESCRIPTION
   
       my $news = new News;
       print $news->toHash()->{text};
-      print $news->toHash()->{title};
+      print $news->to_h()->{title};
 
    dump
     Return string which shows object current struct.
@@ -270,7 +275,7 @@ DESCRIPTION
       my $news = new News;
       say $news->getAuthorString();
 
-   protected, private method
+   protected, private methods
     To define access for methods you can use attributes "Public", "Private"
     and "Protected".
 
@@ -383,7 +388,7 @@ DESCRIPTION
   
       $n2->flush;
   
-      # Em... When I must meet Mary?
+      # Em... When I should meet Mary?
 
    Abstract methods and classes
     You can use use abstract methods and classes in the following way:
@@ -464,10 +469,9 @@ DESCRIPTION
         die $e;
       };
 
-SEE
-    Discussion
-        <http://lorcode.org/thread/2338>
+    Use ":exceptions" param to enable try/catch/finally blocks.
 
+SEE
     Git <https://github.com/h15/pony-object>
 
 COPYRIGHT AND LICENSE

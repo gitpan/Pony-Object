@@ -7,11 +7,12 @@ use strict;
 use warnings;
 use feature ':5.10';
 
-use Test::More tests => 88;
+use Test::More tests => 90;
 
 use_ok 'Pony::Object';
 
-use Pony::Object;
+use Pony::Object qw/:exceptions/;
+use Pony::Object::Throwable;
 
 # For simple tests.
 use Object::FirstPonyClass;
@@ -225,6 +226,11 @@ use Object::Animal::Cattle;
   ok( $hash->{d} eq 'd', 'Test toHash 1' );
   ok( $hash->{a} eq 'j', 'Test toHash 2' );
   
+  $hash = $copyObj1->to_h();
+  
+  ok( $hash->{d} eq 'd', 'Test to_h 1' );
+  ok( $hash->{a} eq 'j', 'Test to_h 2' );
+  
   
   #====================================
   #   Access attributes, properties.
@@ -398,6 +404,7 @@ use Abstract::Fourth;
     }
   };
   
+  # FixMe: returns from try/catch must returns.
   sub retInCatch
     {
       try {
