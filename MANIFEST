@@ -19,12 +19,18 @@ MANIFEST			This list of files
 META.json
 META.yml
 README
+MANIFEST.SKIP
 script/install
 t/00-object.t
+t/01-exceptions.t
+t/02-default.t
 t/Abstract/First.pm
 t/Abstract/Fourth.pm
 t/Abstract/Second.pm
 t/Abstract/Third.pm
+t/Default/Base.pm
+t/Default/NoBase/Class.pm
+t/Default/RequiredException.pm
 t/Human/Base.pm
 t/Human/Movable.pm
 t/Human/WithCache.pm
@@ -57,3 +63,4 @@ t/Object/SecondPonyClass.pm
 t/Object/Singleton.pm
 t/Object/SingletonExt.pm
 t/Object/ThirdPonyClass.pm
+t/Throw/ThisIsMyException.pm

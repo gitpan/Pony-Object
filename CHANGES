@@ -1,5 +1,10 @@
 Revision history for Pony::Object
 
+0.08  06-06-2013
+        - Add $Pony::Object::DEFAULT to define project's default Pony's options.
+        - Try/catch/finally returns result to scalar/array.
+        - Add option ':noexceptions' to disable try/catch/finally blocks.
+
 0.07  04-06-2013
         - Try/catch/finally blocks are optional. Use ':exceptions' param to use them.
         - Add alias 'to_h' for 'toHash'.

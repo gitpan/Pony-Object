@@ -1,6 +1,6 @@
 package Object::Animal::ICattle;
 use Pony::Object -abstract;
 
-    sub gore : Abstract;
+  sub gore : Abstract;
 
 1;

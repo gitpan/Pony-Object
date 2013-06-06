@@ -18,13 +18,22 @@ BEGIN {
     *{dumper} = sub {
       use Data::Dumper;
       $Data::Dumper::Indent = 1;
-      Dumper(@_);
+      say Dumper(@_);
+      say '=' x 79;
     }
   }
 }
 
-our $VERSION = 0.07;
+our $VERSION = 0.08;
 
+# Var: $DEFAULT
+#   Use it to redefine default Pony's options.
+our $DEFAULT = {
+  '' => {
+    'withExceptions' => 0,
+    'baseClass' => [],
+  }
+};
 
 # Function: import
 #   This function will runs on each use of this module.
@@ -45,7 +54,20 @@ sub import {
   return if defined *{$call.'::ALL'};
   
   # Parse parameters.
-  my $profile = parseParams($call, @_);
+  my $default = dclone $DEFAULT;
+  my $profile;
+  for my $prefix (sort {length $b <=> length $a} keys %$DEFAULT) {
+    if ($call =~ /^$prefix/) {
+      $profile->{$_} = $default->{$prefix}->{$_}
+        for grep {not exists $profile->{$_}} keys %{ $default->{$prefix} };
+      next;
+    }
+    last if keys %{$default->{''}} == keys %{$default->{$call}};
+  }
+  $profile->{isAbstract} = 0; # don't do default object abstract.
+  $profile->{isSingleton} = 0; # don't do default object singleton.
+  
+  $profile = parseParams($call, $profile, @_);
   
   # Keywords, base methods, attributes.
   predefine($call, $profile);
@@ -104,15 +126,15 @@ sub importNew {
 #   Load all base classes and read class params.
 #
 # Parameters:
-#   $call   - Str       - caller package.
-#   @params - Array     - import params.
+#   $call    - Str      - caller package.
+#   $profile - HashRef  - profile of this use.
+#   @params  - Array    - import params.
 #
 # Returns:
 #   HashRef - $profile
 
 sub parseParams {
-  my ($call, @params) = @_;
-  my $profile = {};
+  my ($call, $profile, @params) = @_;
   
   for my $param (@params) {
     given ($param) {
@@ -129,9 +151,17 @@ sub parseParams {
         next;
       }
       
+      # Features:
+      
       # Use exceptions featureset.
-      when (/^:exceptions$/) {
+      when (/^:exceptions?$/) {
         $profile->{withExceptions} = 1;
+        next;
+      }
+      
+      # Don't use exceptions featureset.
+      when (/^:noexceptions?$/) {
+        $profile->{withExceptions} = 0;
         next;
       }
     }
@@ -158,7 +188,8 @@ sub prepareClass {
   $call->META->{isSingleton} = $profile->{isSingleton} // 0;
   $call->META->{isAbstract} = $profile->{isAbstract} // 0;
 
-  for my $base ( @{ $profile->{baseClass} } ) {
+  for my $base (@{ $profile->{baseClass} }) {
+    next if $call eq $base;
     load $base;
     $base->AFTER_LOAD_CHECK if $base->can('AFTER_LOAD_CHECK');
     push @$isaRef, $base;
@@ -202,9 +233,28 @@ sub predefine {
     *{$call.'::try'} = sub (&;@) {
       my($try, $catch, $finally) = @_;
       local $@;
-      eval{ $try->() };
-      $catch->($@) if $@;
-      $finally->() if defined $finally;
+      
+      # If some one wanna to get some
+      # values from try/catch/finally blocks.
+      given (wantarray) {
+        when (0) {
+          my $ret = eval{ $try->() };
+          $ret = $catch->($@) if $@;
+          $ret = $finally->() if defined $finally;
+          return $ret;
+        }
+        when (1) {
+          my @ret = eval{ $try->() };
+          @ret = $catch->($@) if $@;
+          @ret = $finally->() if defined $finally;
+          return @ret;
+        }
+        default {
+          eval{ $try->() };
+          $catch->($@) if $@;
+          $finally->() if defined $finally;
+        }
+      }
     };
     *{$call.'::catch'} = sub (&;@) { @_ };
     *{$call.'::finally'} = sub (&) { @_ };
@@ -606,7 +656,7 @@ __END__
 
 =head1 NAME
 
-Pony::Object the object system.
+Pony::Object is the object system.
 
 =head1 OVERVIEW
 
@@ -618,7 +668,7 @@ Pony::Object is an object system, which provides simple way to use cute objects.
   #   Abstract class for articles.
   
   package MyArticle;
-  use Pony::Object qw(-abstract :extentions);
+  use Pony::Object qw(-abstract :exceptions);
   use MyArticle::Exception::IO; # Based on Pony::Object::Throwable class.
     
     protected date => undef;
@@ -677,21 +727,17 @@ Pony::Object is an object system, which provides simple way to use cute objects.
         my $this = shift;
         my $file = shift;
         
-        try
-        {
+        try {
           open F, $file or
             throw MyArticle::Exception::IO(action => "read", file => $file);
           
           # do smth
           
           close F;
-        }
-        catch
-        {
+        } catch {
           my $e = shift; # get exception object
           
-          if ($e->isa('MyArticle::Exception::IO'))
-          {
+          if ($e->isa('MyArticle::Exception::IO')) {
             # handler for MyArticle::Exception::IO exceptions
           }
         };
@@ -701,8 +747,8 @@ Pony::Object is an object system, which provides simple way to use cute objects.
 
 =head1 DESCRIPTION
 
-When some package uses Pony::Object, it's becomes strict (and shows warnings)
-and modern (can use perl 5.10 features like as C<say>). Also C<dump> function
+When some package uses Pony::Object, it becomes strict and modern
+(can use perl 5.10 features like as C<say>). Also C<dump> function
 is redefined and shows data structure. It's useful for debugging.
 
 =head2 Specific moments
@@ -733,7 +779,7 @@ If you want.
     sub printAuthors
       {
         my $this = shift;
-        print @{ $this->authors };
+        print @{$this->authors};
       }
   1;
 
@@ -748,14 +794,14 @@ Pony::Object fields assigned via "=". For example: $obj->field = 'a'.
 
 =head3 new
 
-Pony::Object doesn't have method C<new>. In fact, of course it has. But C<new> is an
-internal function, so you should not use it if you want not have additional fun.
+Pony::Objects hasn't method C<new>. In fact, of course they has. But C<new> is an
+internal function, so you should not use it if you don't want more "fun".
 Instead of this Pony::Object has C<init> function, where you can write the same,
 what you wish write in C<new>. C<init> is after-hook for C<new>.
 
   package News;
   use Pony::Object;
-  
+    
     has title => undef;
     has lower => undef;
     
@@ -765,6 +811,7 @@ what you wish write in C<new>. C<init> is after-hook for C<new>.
         $this->title = shift;
         $this->lower = lc $this->title;
       }
+    
   1;
 
   package main;
@@ -773,43 +820,13 @@ what you wish write in C<new>. C<init> is after-hook for C<new>.
   
   print $news->lower;
 
-=head3 ALL
-
-If you wanna get all default values of Pony::Object-based class
-(fields, of course), you can call C<ALL> method. I don't know why you need them,
-but you can do it.
-
-  package News;
-  use Pony::Object;
-  
-    has 'title';
-    has text => '';
-    has authors => [ qw/Alice Bob/ ];
-    
-  1;
-
-  package main;
-  
-  my $news = new News;
-  
-  print for keys %{ $news->ALL() };
-
-=head3 META
-
-One more internal method. It provides access to special hash C<%META>.
-You can use it for Pony::Object introspection but do not trust it. It can be
-changed in next versions.
-
-  my $news = new News;
-  say dump $news->META;
-
 =head3 toHash or to_h
 
-Get object's data structure and return it in hash.
+Get object's data structure and return this as a hash.
 
   package News;
   use Pony::Object;
-  
+    
     has title => 'World';
     has text => 'Hello';
     
@@ -823,7 +840,7 @@ Get object's data structure and return it in hash.
 
 =head3 dump
 
-Return string which shows object current struct.
+Return string which shows object's current struct.
 
   package News;
   use Pony::Object;
@@ -846,10 +863,10 @@ Returns
     'title' => 'World'
   }, 'News' );
 
-=head3 protected, private properties
+=head3 public, protected, private properties
 
-For properties you can use C<has> keyword if your variable starts with _ (for
-protected) or __ (for private).
+You can use C<has> keyword to define property. If your variable starts with "_", variable becomes 
+protected. "__" for private.
 
   package News;
   use Pony::Object;
@@ -860,7 +877,7 @@ protected) or __ (for private).
     sub getAuthorString
       {
         my $this = shift;
-        return join(' ', @{ $this->__authors });
+        return join(' ', @{$this->__authors});
       }
     
   1;
@@ -870,7 +887,7 @@ protected) or __ (for private).
   my $news = new News;
   say $news->getAuthorString();
 
-Or the same but with keywords C<public>, C<protected> and C<private>.
+The same but with keywords C<public>, C<protected> and C<private>.
 
   package News;
   use Pony::Object;
@@ -881,7 +898,7 @@ Or the same but with keywords C<public>, C<protected> and C<private>.
     sub getAuthorString
       {
         my $this = shift;
-        return join(' ', @{ $this->authors });
+        return join(' ', @{$this->authors});
       }
     
   1;
@@ -891,10 +908,9 @@ Or the same but with keywords C<public>, C<protected> and C<private>.
   my $news = new News;
   say $news->getAuthorString();
 
-=head3 protected, private methods
+=head3 Public, Protected, Private methods
 
-To define access for methods you can use attributes C<Public>, C<Private> and
-C<Protected>.
+Use attributes C<Public>, C<Private> and C<Protected> to define method's access type.
 
   package News;
   use Pony::Object;
@@ -912,7 +928,7 @@ C<Protected>.
         my $this = shift;
         my $delim = shift;
         
-        return join( $delim, @{ $this->authors } );
+        return join( $delim, @{$this->authors} );
       }
   1;
 
@@ -923,77 +939,73 @@ C<Protected>.
 
 =head3 Inheritance
 
-To define base classes you should set them as params on Pony::Object use.
+You can define base classes via C<use> params.
 For example, use Pony::Object 'Base::Class';
 
-  package FirstPonyClass;
+  package BaseCar;
   use Pony::Object;
-  
-    # properties
-    has a => 'a';
-    has d => 'd';
     
-    # method
-    has b => sub
+    public speed => 0;
+    protected model => "Base Car";
+    
+    sub get_status_line : Public
       {
         my $this = shift;
-           $this->a = 'b';
-           
-        return ( @_ ?
-              shift:
-              'b'  );
-      };
+        my $status = ($this->speed ? "Moving" : "Stopped");
+        return $this->model . " " . $status;
+      }
     
-    # traditional perl method
-    sub c { 'c' }
-  
   1;
 
-  package SecondPonyClass;
-  # extends FirstPonyClass
-  use Pony::Object qw/FirstPonyClass/;
-  
-    # Redefine property.
-    has d => 'dd';
+  package MyCar;
+  # extends BaseCar
+  use Pony::Object qw/BaseCar/;
     
-    # Redefine method.
-    has b => sub
+    protected model => "My Car";
+    protected color => undef;
+    
+    sub set_color : Public
       {
         my $this = shift;
-           $this->a = 'bb';
-           
-        return ( @_ ?
-              shift:
-              'bb'  );
-      };
+        ($this->color) = @_;
+      }
     
-    # New method.
-    has e => sub {'e'};
-  
   1;
+
+  use MyCar;
+  my $car = new MyCar;
+  $car->speed = 20;
+  $car->set_color("White");
+  print $car->get_status_line();
+  # "My Car Moving"
 
 =head3 Singletons
 
-For singletons Pony::Object has simple syntax. You just should declare that
-on use Pony::Object;
+Pony::Object has simple syntax for singletons . You can declare this via C<use> param;
 
   package Notes;
   use Pony::Object 'singleton';
-  
-    has list => [];
     
-    sub add
+    protected list => [];
+    
+    sub add : Public
       {
         my $this = shift;
         push @{ $this->list }, @_;
       }
     
-    sub flush
+    sub show : Public
+      {
+        my $this = shift;
+        say for @{$this->list};
+      }
+    
+    sub flush : Public
       {
         my $this = shift;
         $this->list = [];
       }
-  
+    
   1;
 
   package main;
@@ -1002,32 +1014,33 @@ on use Pony::Object;
   my $n1 = new Notes;
   my $n2 = new Notes;
   
-  $n1->add( qw/eat sleep/ );
-  $n1->add( 'Meet with Mary at 8 o`clock' );
+  $n1->add(qw/eat sleep/);
+  $n1->add('Meet with Mary at 8 o`clock');
   
   $n2->flush;
   
-  # Em... When I should meet Mary? 
+  $n1->show();  # Print nothing.
+                # Em... When I should meet Mary? 
 
 =head3 Abstract methods and classes
 
-You can use use abstract methods and classes in the following way:
+You can use abstract methods and classes follows way:
 
   # Let's define simple interface for texts.
   package Text::Interface;
   use Pony::Object -abstract; # Use 'abstract' or '-abstract'
-                # params to define abstract class.
-  
+                              # params to define abstract class.
+    
     sub getText : Abstract; # Use 'Abstract' attribute to
     sub setText : Abstract; # define abstract method.
-  
+    
   1;
 
   # Now we can define base class for texts.
   # It's abstract too but now it has some code.
   package Text::Base;
-  use Pony::Object abstract => 'Text::Interface';
-  
+  use Pony::Object qw/abstract Text::Interface/;
+    
     protected text => '';
     
     sub getText : Public
@@ -1035,19 +1048,19 @@ You can use use abstract methods and classes in the following way:
         my $this = shift;
         return $this->text;
       }
-  
+    
   1;
 
-  # And in the end we can write Text class.
+  # In the end we can write Text class.
   package Text;
   use Pony::Object 'Text::Base';
-  
+    
     sub setText : Public
       {
         my $this = shift;
         $this->text = shift;
       }
-  
+    
   1;
 
   # Main file.
@@ -1055,41 +1068,84 @@ You can use use abstract methods and classes in the following way:
   use Text;
   use Text::Base;
   
-  my $text = new Text::Base;  # Raises an error!
+  my $textBase = new Text::Base;  # Raises an error!
   
   my $text = new Text;
   $text->setText('some text');
   print $text->getText();   # Returns 'some text';
 
-Don't forget, that perl looking for function from left to right in list of
-inheritance packages. You should define abstract classes in the end of
+Don't forget, that perl looking for functions from left to right in list of
+inheritance. You should define abstract classes in the end of
 Pony::Object param list.
 
 =head3 Exceptions
 
-Wanna to use Pony exceptions in your code? There is nothing easier! Use block
-C<try> to wrap code with possible exceptions, block C<catch> to catch exceptions
-and C<finally> to define code, which should be runned after all.
+See L<Pony::Object::Throwable>.
 
-When we talk about exceptions we mean special type of Perl's C<die>.
-Base class for all pony-exceptions is Pony::Object::Throwable. It has one method
-C<throw>. It should be used on exceptions in the program.
+=head3 ALL
 
-  try {
-    open F, $file or
-      throw Pony::Object::Throwable("Can't find $file.");
+If you wanna get all default values of Pony::Object-based class,
+you can call C<ALL> method. I don't know why you need them, but you can.
+
+  package News;
+  use Pony::Object;
+    
+    has 'title';
+    has text => '';
+    has authors => [ qw/Alice Bob/ ];
+    
+  1;
+
+  package main;
+  my $news = new News;
+  print for keys %{ $news->ALL() };
+
+=head3 META
+
+One more internal method. It provides access to special hash C<%META>.
+You can use this for Pony::Object introspection. It can be changed in next versions.
+
+  my $news = new News;
+  say dump $news->META;
+
+=head3 $Pony::Object::DEFAULT
+
+This is a global variable. It defines default Pony::Object's params. For example you can set
+C<$Pony::Object::DEFAULT->{''}->{withExceptions} = 1> to enable exceptions by default.
+Use it carefully. Use this if you sure, that this is smaller evil.
+
+  # Startup script
+  ...
+  use Pony::Object;
+  
+  BEGIN {
+    # Use exceptions by default.
+    $Pony::Object::DEFAULT->{''}->{withExceptions} = 1;
+    # All classes will extends Default::Base.
+    $Pony::Object::DEFAULT->{''}->{baseClass} = [qw/Default::Base/];
+    # All classes in namespace "Default::NoBase" will not.
+    $Pony::Object::DEFAULT->{'Default::NoBase'}->{baseClass} = [];
   }
-  catch {
-    my $e = shift; # get exception object
-    
-    say "Exception catched!";
-    say $e->dump();
-    
-    # Let exception go to next catch block.
-    die $e;
-  };
+  ...
 
-Use C<:exceptions> param to enable try/catch/finally blocks.
+One more example:
+
+  # Startup script
+  ...
+  use Pony::Object;
+  
+  BEGIN {
+    $Pony::Object::DEFAULT->{'My::Awesome::Project'} = {
+      withExceptions => 1,
+      baseClass => [],
+    };
+    
+    $Pony::Object::DEFAULT->{'My::Awesome::Project::Model'} = {
+      withExceptions => 1,
+      baseClass => [qw/My::Awesome::Project::Model::Abstract/],
+    };
+  }
+  ...
 
 =head1 SEE
 

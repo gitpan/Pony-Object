@@ -1,5 +1,5 @@
 {
-   "abstract" : "tiny object system with privacy settings for properties and methods, abstract classes and methods, exception",
+   "abstract" : "tiny object system with privacy settings for properties and methods, abstract classes and methods, exceptions",
    "author" : [
       "Georgy Bazhukov <gosha@bugov.net>"
    ],
@@ -48,7 +48,7 @@
    "provides" : {
       "Pony::Object" : {
          "file" : "lib/Pony/Object.pm",
-         "version" : "0.07"
+         "version" : "0.08"
       },
       "Pony::Object::Throwable" : {
          "file" : "lib/Pony/Object/Throwable.pm"
@@ -63,5 +63,5 @@
          "url" : "https://github.com/h15/pony-object"
       }
    },
-   "version" : "0.07"
+   "version" : "0.08"
 }
