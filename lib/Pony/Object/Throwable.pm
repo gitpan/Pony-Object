@@ -38,7 +38,7 @@ __END__
 
 =head1 NAME
 
-Pony::Object::Throwable is the base throwable object.
+Pony::Object::Throwable - A base throwable object.
 
 =head1 OVERVIEW
 
@@ -54,8 +54,8 @@ When we talk about exceptions we mean special type of Perl's C<die>.
 Base class for all pony-exceptions is Pony::Object::Throwable. It has one method
 C<throw>. It should be used on exceptions in the program.
 
-Use C<:exceptions> param to enable try/catch/finally blocks.
-Use C<:noexceptions> param to disable them.
+Use C<:exceptions> (or C<:try>) param to enable try/catch/finally blocks.
+Use C<:noexceptions> (or C<notry>) param to disable them.
 
 =head1 SYNOPSIS
 

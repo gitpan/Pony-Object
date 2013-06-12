@@ -1,9 +1,10 @@
 NAME
-    Pony::Object is the object system.
+    Pony::Object - An object system.
 
 OVERVIEW
-    Pony::Object is an object system, which provides simple way to use cute
-    objects.
+    If you wanna protected methods, abstract classes and other staff like
+    with, you may use Pony::Object. Also Pony::Objects are strict and
+    modern.
 
 SYNOPSIS
       # Class: MyArticle (Example)
@@ -87,33 +88,25 @@ SYNOPSIS
     
       1;
 
-DESCRIPTION
-    When some package uses Pony::Object, it becomes strict and modern (can
-    use perl 5.10 features like as "say"). Also "dump" function is redefined
-    and shows data structure. It's useful for debugging.
-
-  Specific moments
-    Besides new function "dump" Pony::Object has other specific moments.
-
-   has
-    Keyword "has" declares new fields. All fields are public. You can also
-    describe object methods via "has"... If you want.
+Methods and properties
+  has
+    Keyword "has" declares new property. You also can define methods via
+    "has".
 
       package News;
       use Pony::Object;
-  
-        # Fields
+    
+        # Properties:
         has 'title';
         has text => '';
         has authors => [ qw/Alice Bob/ ];
     
-        # Methods
-        sub printTitle
-          {
-            my $this = shift;
-            say $this->title;
-          }
-
+        # Methods:
+        has printTitle => sub {
+          my $this = shift;
+          say $this->title;
+        };
+    
         sub printAuthors
           {
             my $this = shift;
@@ -121,21 +114,22 @@ DESCRIPTION
           }
       1;
 
+
+
       package main;
-  
+      use News;
       my $news = new News;
       $news->printAuthors();
-      $news->title = 'Something important';
+      $news->title = 'Sensation!'; # Yep, you can assign property's value via "=".
       $news->printTitle();
 
-    Pony::Object fields assigned via "=". For example: $obj->field = 'a'.
-
-   new
+  new
     Pony::Objects hasn't method "new". In fact, of course they has. But
-    "new" is an internal function, so you should not use it if you don't
-    want more "fun". Instead of this Pony::Object has "init" function, where
-    you can write the same, what you wish write in "new". "init" is
-    after-hook for "new".
+    "new" is an internal function, so you should not use "new" as name of
+    method.
+
+    Instead of this Pony::Objects has "init" methods, where you can write
+    the same, what you wish write in "new". "init" is after-hook for "new".
 
       package News;
       use Pony::Object;
@@ -152,54 +146,14 @@ DESCRIPTION
     
       1;
 
+
+
       package main;
-  
+      use News;
       my $news = new News('Big Event!');
-  
       print $news->lower;
 
-   toHash or to_h
-    Get object's data structure and return this as a hash.
-
-      package News;
-      use Pony::Object;
-    
-        has title => 'World';
-        has text => 'Hello';
-    
-      1;
-
-      package main;
-  
-      my $news = new News;
-      print $news->toHash()->{text};
-      print $news->to_h()->{title};
-
-   dump
-    Return string which shows object's current struct.
-
-      package News;
-      use Pony::Object;
-  
-        has title => 'World';
-        has text => 'Hello';
-    
-      1;
-
-      package main;
-  
-      my $news = new News;
-      $news->text = 'Hi';
-      print $news->dump();
-
-    Returns
-
-      $VAR1 = bless( {
-        'text' => 'Hi',
-        'title' => 'World'
-      }, 'News' );
-
-   public, protected, private properties
+  public, protected, private properties
     You can use "has" keyword to define property. If your variable starts
     with "_", variable becomes protected. "__" for private.
 
@@ -217,8 +171,10 @@ DESCRIPTION
     
       1;
 
+
+
       package main;
-  
+      use News;
       my $news = new News;
       say $news->getAuthorString();
 
@@ -226,7 +182,7 @@ DESCRIPTION
 
       package News;
       use Pony::Object;
-  
+    
         public text => '';
         private authors => [ qw/Alice Bob/ ];
     
@@ -238,18 +194,20 @@ DESCRIPTION
     
       1;
 
+
+
       package main;
-  
+      use News;
       my $news = new News;
       say $news->getAuthorString();
 
-   Public, Protected, Private methods
+  Public, Protected, Private methods
     Use attributes "Public", "Private" and "Protected" to define method's
     access type.
 
       package News;
       use Pony::Object;
-  
+    
         public text => '';
         private authors => [ qw/Alice Bob/ ];
     
@@ -265,16 +223,94 @@ DESCRIPTION
         
             return join( $delim, @{$this->authors} );
           }
+    
       1;
 
+
+
       package main;
-  
+      use News;
       my $news = new News;
       say $news->getAuthorString();
 
-   Inheritance
-    You can define base classes via "use" params. For example, use
-    Pony::Object 'Base::Class';
+  Static properties
+    Just say ""static"" and property will the same in all objects of class.
+
+      package News;
+      use Pony::Object;
+    
+        public static 'default_publisher' => 'Georgy';
+        public 'publisher';
+    
+        sub init : Public
+          {
+            my $this = shift;
+            $this->publisher = $this->default_publisher;
+          }
+    
+      1;
+
+
+
+      package main;
+      use News;
+  
+      my $n1 = new News;
+      $n1->default_publisher = 'Bazhukov';
+      my $n2 = new News;
+      print $n1->publisher; # "Georgy"
+      print $n2->publisher; # "Bazhukov"
+
+Default methods
+  toHash or to_h
+    Get object's data structure and return this as a hash.
+
+      package News;
+      use Pony::Object;
+    
+        has title => 'World';
+        has text => 'Hello';
+    
+      1;
+
+
+
+      package main;
+      use News;
+      my $news = new News;
+      print $news->toHash()->{text};
+      print $news->to_h()->{title};
+
+  dump
+    Shows object's current struct.
+
+      package News;
+      use Pony::Object;
+    
+        has title => 'World';
+        has text => 'Hello';
+    
+      1;
+
+
+
+      package main;
+      use News;
+      my $news = new News;
+      $news->text = 'Hi';
+      print $news->dump();
+
+    Returns
+
+      $VAR1 = bless( {
+        'text' => 'Hi',
+        'title' => 'World'
+      }, 'News' );
+
+Classes
+  Inheritance
+    You can define base classes via "use" params. For example, "use
+    Pony::Object 'Base::Class';"
 
       package BaseCar;
       use Pony::Object;
@@ -291,6 +327,8 @@ DESCRIPTION
     
       1;
 
+
+
       package MyCar;
       # extends BaseCar
       use Pony::Object qw/BaseCar/;
@@ -306,6 +344,9 @@ DESCRIPTION
     
       1;
 
+
+
+      package main;
       use MyCar;
       my $car = new MyCar;
       $car->speed = 20;
@@ -313,7 +354,7 @@ DESCRIPTION
       print $car->get_status_line();
       # "My Car Moving"
 
-   Singletons
+  Singletons
     Pony::Object has simple syntax for singletons . You can declare this via
     "use" param;
 
@@ -342,6 +383,8 @@ DESCRIPTION
     
       1;
 
+
+
       package main;
       use Notes;
   
@@ -356,7 +399,7 @@ DESCRIPTION
       $n1->show();  # Print nothing.
                     # Em... When I should meet Mary?
 
-   Abstract methods and classes
+  Abstract methods and classes
     You can use abstract methods and classes follows way:
 
       # Let's define simple interface for texts.
@@ -368,6 +411,8 @@ DESCRIPTION
         sub setText : Abstract; # define abstract method.
     
       1;
+
+
 
       # Now we can define base class for texts.
       # It's abstract too but now it has some code.
@@ -384,6 +429,8 @@ DESCRIPTION
     
       1;
 
+
+
       # In the end we can write Text class.
       package Text;
       use Pony::Object 'Text::Base';
@@ -395,6 +442,8 @@ DESCRIPTION
           }
     
       1;
+
+
 
       # Main file.
       package main;
@@ -411,9 +460,10 @@ DESCRIPTION
     of inheritance. You should define abstract classes in the end of
     Pony::Object param list.
 
-   Exceptions
+  Exceptions
     See Pony::Object::Throwable.
 
+  Inside
    ALL
     If you wanna get all default values of Pony::Object-based class, you can
     call "ALL" method. I don't know why you need them, but you can.
@@ -426,6 +476,8 @@ DESCRIPTION
         has authors => [ qw/Alice Bob/ ];
     
       1;
+
+
 
       package main;
       my $news = new News;
@@ -442,8 +494,8 @@ DESCRIPTION
    $Pony::Object::DEFAULT
     This is a global variable. It defines default Pony::Object's params. For
     example you can set "$Pony::Object::DEFAULT-"{''}->{withExceptions} = 1>
-    to enable exceptions by default. Use it carefully. Use this if you sure,
-    that this is smaller evil.
+    to enable exceptions (try, catch, finally blocks) by default. Use it
+    carefully.
 
       # Startup script
       ...

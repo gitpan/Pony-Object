@@ -1,5 +1,11 @@
 Revision history for Pony::Object
 
+0.09  12-06-2013
+        - Fix private logic (thanks to vrurg).
+        - Fix 'has' methods.
+        - Fix for perl 5.17.11.
+        - Add static properties.
+
 0.08  06-06-2013
         - Add $Pony::Object::DEFAULT to define project's default Pony's options.
         - Try/catch/finally returns result to scalar/array.
