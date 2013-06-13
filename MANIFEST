@@ -22,6 +22,7 @@ META.yml
 README
 script/install
 t/00-object.t
+t/01-exceptions-5.14.t
 t/01-exceptions.t
 t/02-default.t
 t/03-private.t

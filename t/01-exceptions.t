@@ -7,7 +7,7 @@ use strict;
 use warnings;
 use feature ':5.10';
 
-use Test::More tests => 15;
+use Test::More tests => 13;
 
 use Pony::Object ':exceptions';
 use Pony::Object::Throwable;
@@ -141,43 +141,6 @@ use Throw::ThisIsMyException;
       ok("one" eq $_[0]->get_one, "custom exception");
     }
   };
-  
-  # Throw in catch/finally
-  
-  my $result = try {
-    try {
-      die;
-    } catch {
-      throw Pony::Object::Throwable("This try isn't good enought");
-    };
-    
-    return "bad";
-  } catch {
-    my $e = shift;
-    return "good" if "This try isn't good enought" eq $e->{message};
-  };
-  
-  ok("good" eq $result, "Throw in catch. It's nice to be good");
-  
-  $result = try {
-    try {
-      die;
-    } catch {
-    } finally {
-      throw Pony::Object::Throwable("This try isn't good enought too");
-    };
-    
-    return "bad";
-  } catch {
-    my $e = shift;
-    return "good" if "This try isn't good enought too" eq $e->{message};
-  };
-  
-  ok("good" eq $result, "Throw in finally. It's bad to be bad");
-  
-  
-  #=========
-  #   END
-  #=========
+
   
   diag( "Testing exceptions for Pony::Object $Pony::Object::VERSION" );

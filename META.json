@@ -4,7 +4,7 @@
       "Georgy Bazhukov <gosha@bugov.net>"
    ],
    "dynamic_config" : 1,
-   "generated_by" : "Module::Build version 0.4003, CPAN::Meta::Converter version 2.130880",
+   "generated_by" : "Module::Build version 0.4003, CPAN::Meta::Converter version 2.131490",
    "keywords" : [
       "Class",
       "Object",
@@ -41,14 +41,14 @@
             "Module::Load" : "0",
             "Scalar::Util" : "0",
             "Storable" : "0",
-            "perl" : "5.010"
+            "perl" : "5.012"
          }
       }
    },
    "provides" : {
       "Pony::Object" : {
          "file" : "lib/Pony/Object.pm",
-         "version" : "0.09"
+         "version" : "0.10"
       },
       "Pony::Object::Throwable" : {
          "file" : "lib/Pony/Object/Throwable.pm"
@@ -66,5 +66,5 @@
          "url" : "https://github.com/h15/pony-object"
       }
    },
-   "version" : "0.09"
+   "version" : "0.10"
 }

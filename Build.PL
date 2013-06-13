@@ -20,7 +20,7 @@ my $builder = Module::Build->new
   },
   requires =>
   {
-    'perl' => '5.010',
+    'perl' => '5.012',
     'Module::Load' => 0,
     'Storable' => 0,
     'Carp' => 0,

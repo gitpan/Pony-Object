@@ -57,6 +57,8 @@ C<throw>. It should be used on exceptions in the program.
 Use C<:exceptions> (or C<:try>) param to enable try/catch/finally blocks.
 Use C<:noexceptions> (or C<notry>) param to disable them.
 
+Nested try works for perl-5.14 or higher.
+
 =head1 SYNOPSIS
 
   package MyFile;

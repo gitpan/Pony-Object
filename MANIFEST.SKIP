@@ -9,3 +9,4 @@
 ^script\/clean_repo$
 ^MYMETA\.yml$
 ^MYMETA\.json$
+\.tar\.gz$
