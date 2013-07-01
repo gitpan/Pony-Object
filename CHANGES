@@ -1,5 +1,8 @@
 Revision history for Pony::Object
 
+0.11  01-07-2013
+        - Add option ':noobject' for using Pony without objects.
+
 0.10  13-06-2013
         - Fix tests.
         - Requires perl-5.12 or higher.

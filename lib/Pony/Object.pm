@@ -24,7 +24,7 @@ BEGIN {
   }
 }
 
-our $VERSION = "0.10";
+our $VERSION = "0.11";
 
 # Var: $DEFAULT
 #   Use it to redefine default Pony's options.
@@ -56,6 +56,7 @@ sub import {
   # Parse parameters.
   my $default = dclone $DEFAULT;
   my $profile;
+  # Get predefined params.
   for my $prefix (sort {length $b <=> length $a} keys %$DEFAULT) {
     if ($call =~ /^$prefix/) {
       $profile->{$_} = $default->{$prefix}->{$_}
@@ -77,13 +78,14 @@ sub import {
   warnings->import;
   feature ->import(':5.10');
   
-  # Base classes and params.
-  prepareClass($call, "${call}::ISA", $profile);
-  
-  methodsInheritance($call);
-  propertiesInheritance($call);
-  
-  *{$call.'::new'} = sub { importNew($call, @_) };
+  unless ($profile->{noObject}) {
+    # Base classes and params.
+    prepareClass($call, "${call}::ISA", $profile);
+    
+    methodsInheritance($call);
+    propertiesInheritance($call);
+    *{$call.'::new'} = sub { importNew($call, @_) };
+  }
 }
 
 
@@ -167,6 +169,13 @@ sub parseParams {
       next;
     }
     
+    # Don't create an object.
+    # Just make package strict modern and add some staff.
+    elsif ($param =~ /^:noobject$/) {
+      $profile->{noObject} = 1;
+      next;
+    }
+    
     # Base classes:
     
     # Save class' base classes.
@@ -212,28 +221,60 @@ sub prepareClass {
 sub predefine {
   my ($call, $profile) = @_;
   
-  # Predefine ALL and META.
-  %{$call.'::ALL' } = ();
-  %{$call.'::META'} = ();
-  ${$call.'::META'}{isSingleton}= 0;
-  ${$call.'::META'}{isAbstract} = 0;
-  ${$call.'::META'}{abstracts}  = [];
-  ${$call.'::META'}{methods}    = {};
-  ${$call.'::META'}{properties} = {};
-  ${$call.'::META'}{symcache}   = {};
-  ${$call.'::META'}{checked}    = 0;
-  ${$call.'::META'}{static}     = {};
-  
-  #====================
-  # Define "keywords".
-  #====================
-  
-  # Access for properties.
-  *{$call.'::has'}      = sub { addProperty ($call, @_) };
-  *{$call.'::static'}   = sub { addStatic   ($call, @_) };
-  *{$call.'::public'}   = sub { addPublic   ($call, @_) };
-  *{$call.'::private'}  = sub { addPrivate  ($call, @_) };
-  *{$call.'::protected'}= sub { addProtected($call, @_) };
+  # Only for objects.
+  unless ($profile->{noObject}) {
+    # Predefine ALL and META.
+    %{$call.'::ALL' } = ();
+    %{$call.'::META'} = ();
+    ${$call.'::META'}{isSingleton}= 0;
+    ${$call.'::META'}{isAbstract} = 0;
+    ${$call.'::META'}{abstracts}  = [];
+    ${$call.'::META'}{methods}    = {};
+    ${$call.'::META'}{properties} = {};
+    ${$call.'::META'}{symcache}   = {};
+    ${$call.'::META'}{checked}    = 0;
+    ${$call.'::META'}{static}     = {};
+    
+    # Access for properties.
+    *{$call.'::has'}      = sub { addProperty ($call, @_) };
+    *{$call.'::static'}   = sub { addStatic   ($call, @_) };
+    *{$call.'::public'}   = sub { addPublic   ($call, @_) };
+    *{$call.'::private'}  = sub { addPrivate  ($call, @_) };
+    *{$call.'::protected'}= sub { addProtected($call, @_) };
+    
+    # Convert object's data into hash.
+    # Uses ALL() to get properties' list.
+    *{$call.'::toHash'} = *{$call.'::to_h'} = sub {
+      my $this = shift;
+      my %hash = map { $_, $this->{$_} } keys %{ $this->ALL() };
+      return \%hash;
+    };
+    
+    *{$call.'::AFTER_LOAD_CHECK'} = sub { checkImplementations($call) };
+    
+    # Save method's attributes.
+    *{$call.'::MODIFY_CODE_ATTRIBUTES'} = sub {
+      my ($pkg, $ref, @attrs) = @_;
+      my $sym = findsym($pkg, $ref);
+      
+      $call->META->{methods}->{ *{$sym}{NAME} } = {
+        attributes => \@attrs,
+        package => $pkg
+      };
+      
+      for my $attr (@attrs) {
+        if    ($attr eq 'Public'   ) { makePublic   ($pkg, $sym, $ref) }
+        elsif ($attr eq 'Protected') { makeProtected($pkg, $sym, $ref) }
+        elsif ($attr eq 'Private'  ) { makePrivate  ($pkg, $sym, $ref) }
+        elsif ($attr eq 'Abstract' ) { makeAbstract ($pkg, $sym, $ref) }
+      }
+      return;
+    };
+    
+    # Getters for REFs to special variables %ALL and %META.
+    *{$call.'::ALL'}  = sub { \%{ $call.'::ALL' } };
+    *{$call.'::META'} = sub { \%{ $call.'::META'} };
+  }
   
   # Try, Catch, Finally.
   # Define them if user wants.
@@ -268,52 +309,15 @@ sub predefine {
     *{$call.'::finally'} = sub (&) { @_ };
   }
   
-  #=========================
-  # Define special methods.
-  #=========================
-  
-  # Getters for REFs to special variables %ALL and %META.
-  *{$call.'::ALL'}  = sub { \%{ $call.'::ALL' } };
-  *{$call.'::META'} = sub { \%{ $call.'::META'} };
-  
   # This method provides deep copy
   # for Pony::Objects
   *{$call.'::clone'}  = sub { dclone shift };
-  
-  # Convert object's data into hash.
-  # Uses ALL() to get properties' list.
-  *{$call.'::toHash'} = *{$call.'::to_h'} = sub {
-    my $this = shift;
-    my %hash = map { $_, $this->{$_} } keys %{ $this->ALL() };
-    return \%hash;
-  };
   
   # Simple Data::Dumper wrapper.
   *{$call.'::dump'} = sub {
     use Data::Dumper;
     $Data::Dumper::Indent = 1;
     Dumper(@_);
-  };
-  
-  *{$call.'::AFTER_LOAD_CHECK'} = sub { checkImplementations($call) };
-  
-  # Save method's attributes.
-  *{$call.'::MODIFY_CODE_ATTRIBUTES'} = sub {
-    my ($pkg, $ref, @attrs) = @_;
-    my $sym = findsym($pkg, $ref);
-    
-    $call->META->{methods}->{ *{$sym}{NAME} } = {
-      attributes => \@attrs,
-      package => $pkg
-    };
-    
-    for my $attr (@attrs) {
-      if    ($attr eq 'Public'   ) { makePublic   ($pkg, $sym, $ref) }
-      elsif ($attr eq 'Protected') { makeProtected($pkg, $sym, $ref) }
-      elsif ($attr eq 'Private'  ) { makePrivate  ($pkg, $sym, $ref) }
-      elsif ($attr eq 'Abstract' ) { makeAbstract ($pkg, $sym, $ref) }
-    }
-    return;
   };
 }
 
@@ -1106,6 +1110,28 @@ Returns
     'text' => 'Hi',
     'title' => 'World'
   }, 'News' );
+
+=head2 Without Objects
+
+If you like functions C<say>, C<dump>, C<try>/C<catch>, you can use them without creating object.
+Use C<:noobject> option to enable them but do not create object/making class.
+
+  use Pony::Object qw/:noobject :try/;
+  
+  my $a = {deep => [{deep => ['structure']}]};
+  say dump $a;
+  
+  my $data = try {
+    local $/;
+    open my $fh, './some/file' or die;
+    my $slurp = <$fh>;
+    close $fh;
+    return $slurp;
+  } catch {
+    return '';
+  };
+  
+  say "\$data: $data";
 
 =head1 Classes
 

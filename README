@@ -307,6 +307,28 @@ Default methods
         'title' => 'World'
       }, 'News' );
 
+  Without Objects
+    If you like functions "say", "dump", "try"/"catch", you can use them
+    without creating object. Use ":noobject" option to enable them but do
+    not create object/making class.
+
+      use Pony::Object qw/:noobject :try/;
+  
+      my $a = {deep => [{deep => ['structure']}]};
+      say dump $a;
+  
+      my $data = try {
+        local $/;
+        open my $fh, './some/file' or die;
+        my $slurp = <$fh>;
+        close $fh;
+        return $slurp;
+      } catch {
+        return '';
+      };
+  
+      say "\$data: $data";
+
 Classes
   Inheritance
     You can define base classes via "use" params. For example, "use

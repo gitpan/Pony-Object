@@ -11,6 +11,9 @@ examples/03-Abstracts/main.pl
 examples/03-Abstracts/Text.pm
 examples/03-Abstracts/Text/Base.pm
 examples/03-Abstracts/Text/Interface.pm
+examples/04-Statics/Counter.pm
+examples/04-Statics/main.pl
+examples/05-NoObject/main.pl
 lib/Pony/Object.pm
 lib/Pony/Object/Throwable.pm
 LICENSE
@@ -20,13 +23,13 @@ MANIFEST.SKIP
 META.json
 META.yml
 README
-script/install
 t/00-object.t
 t/01-exceptions-5.14.t
 t/01-exceptions.t
 t/02-default.t
 t/03-private.t
 t/04-static.t
+t/05-noobject.t
 t/Abstract/First.pm
 t/Abstract/Fourth.pm
 t/Abstract/Second.pm

@@ -26,7 +26,7 @@ name: Pony-Object
 provides:
   Pony::Object:
     file: lib/Pony/Object.pm
-    version: 0.10
+    version: 0.11
   Pony::Object::Throwable:
     file: lib/Pony/Object/Throwable.pm
   Pony::Object::TieStatic:
@@ -40,4 +40,4 @@ requires:
 resources:
   license: http://dev.perl.org/licenses/
   repository: https://github.com/h15/pony-object
-version: 0.10
+version: 0.11
