@@ -2,9 +2,8 @@ NAME
     Pony::Object - An object system.
 
 OVERVIEW
-    If you wanna protected methods, abstract classes and other stuff like
-    with, you may use Pony::Object. Also Pony::Objects are strict and
-    modern.
+    If you wanna protected methods, abstract classes and other OOP stuff,
+    you may use Pony::Object. Also Pony::Objects are strict and modern.
 
 SYNOPSIS
       # Class: MyArticle (Example)
@@ -90,7 +89,7 @@ SYNOPSIS
 
 Methods and properties
   has
-    Keyword "has" declares new property. You also can define methods via
+    Keyword "has" declares new property. Also you can define methods via
     "has".
 
       package News;

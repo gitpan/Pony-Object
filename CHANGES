@@ -1,5 +1,8 @@
 Revision history for Pony::Object
 
+1.00  05-08-2013
+        - Fix problem with die in try.
+
 0.11  01-07-2013
         - Add option ':noobject' for using Pony without objects.
 

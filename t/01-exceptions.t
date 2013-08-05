@@ -7,7 +7,7 @@ use strict;
 use warnings;
 use feature ':5.10';
 
-use Test::More tests => 13;
+use Test::More tests => 16;
 
 use Pony::Object ':exceptions';
 use Pony::Object::Throwable;
@@ -75,6 +75,16 @@ use Throw::ThisIsMyException;
     }
   
   #ok(retInCatch(), "Test return from catch");
+  
+  # Catch is optional
+  eval { try { die 1; }; };
+  ok (!$@, "Catch is optional 1");
+  
+  eval { my $a = try { die 1; }; };
+  ok (!$@, "Catch is optional 2");
+  
+  eval { my @a = try { die 1; }; };
+  ok (!$@, "Catch is optional 3");
   
   # ret from try if wantarray == undef|other
   my $a = try {
